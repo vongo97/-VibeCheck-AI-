@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: linkedin-guru-server
+    env: node
+    plan: free
+    region: ohio
+    buildCommand: npm install && cd server && npm install
+    startCommand: cd server && node index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: true
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /usr/bin/google-chrome-stable
+      - key: GEMINI_API_KEY
+        fromConfig: true
+      - key: DATABASE_URL
+        fromConfig: true
+      - key: CORS_ORIGIN
+        value: "*" # Cambiar por el dominio de Vercel después
