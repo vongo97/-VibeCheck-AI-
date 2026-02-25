@@ -3,7 +3,7 @@ import './index.css';
 
 function App() {
   // Estados de Onboarding
-  const [step, setStep] = useState(1); // 1: Questionnaire, 2: Profile Link, 3: Identity Summary, 4: Dashboard
+  const [step, setStep] = useState(localStorage.getItem('llm_apiKey') ? 1 : 0); // 0: Config IA, 1: Questionnaire, 2: Profile Link, 3: Identity Summary, 4: Dashboard
   const [questionnaire, setQuestionnaire] = useState({
     role: '',
     roleOther: '',
@@ -68,7 +68,7 @@ function App() {
     setLoading(true);
     try {
       if (!llmConfig.apiKey) {
-        setStep(5); // Nueva vista de "Configura tu IA" antes de seguir
+        setStep(0); // Volver al inicio si borró la llave
         setLoading(false);
         return;
       }
@@ -289,13 +289,13 @@ function App() {
     );
   }
 
-  if (step === 5) {
+  if (step === 0) {
     return (
       <div className="onboarding-container">
         <div className="onboarding-card" style={{ maxWidth: '500px' }}>
           <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🔑</div>
           <h2>Configura tu Cerebro</h2>
-          <p>Para que la IA aprenda sobre ti de forma ilimitada, usa tu propia API Key.</p>
+          <p>Bienvenido. Para que la IA aprenda sobre ti de forma ilimitada, usa tu propia API Key.</p>
           
           <div className="input-group" style={{ textAlign: 'left' }}>
             <label>1. Elige tu proveedor</label>
@@ -328,13 +328,12 @@ function App() {
               value={llmConfig.apiKey}
               onChange={(e) => saveLlmConfig({...llmConfig, apiKey: e.target.value})}
             />
-            <p style={{ fontSize: '0.7rem', opacity: 0.6, marginTop: '5px' }}>Tus datos se guardan solo en este navegador.</p>
+            <p style={{ fontSize: '0.7rem', opacity: 0.6, marginTop: '5px' }}>Tus datos se guardan solo en este navegador de forma segura.</p>
           </div>
 
-          <button onClick={() => setStep(2)} disabled={!llmConfig.apiKey}>
-            Guardar y Analizar →
+          <button onClick={() => setStep(1)} disabled={!llmConfig.apiKey}>
+            Guardar y Comenzar →
           </button>
-          <button onClick={() => setStep(2)} className="btn-secondary">Atrás</button>
         </div>
       </div>
     );
