@@ -8,14 +8,12 @@ services:
     startCommand: cd server && node index.js
     envVars:
       - key: NODE_VERSION
-        value: 18.0.0
+        value: 18.20.2
       - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
-        value: true
-      - key: PUPPETEER_EXECUTABLE_PATH
-        value: /usr/bin/google-chrome-stable
+        value: "false" # Permitir descarga en Render si no hay Chrome global
       - key: GEMINI_API_KEY
-        fromConfig: true
+        sync: false
       - key: DATABASE_URL
-        fromConfig: true
+        sync: false
       - key: CORS_ORIGIN
-        value: "*" # Cambiar por el dominio de Vercel después
+        value: "*"

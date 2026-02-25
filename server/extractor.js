@@ -8,16 +8,21 @@ import puppeteer from 'puppeteer';
 export async function scrapeLinkedInProfile(profileUrl) {
   let browser;
   try {
-    browser = await puppeteer.launch({
+    const launchOptions = {
       headless: "new",
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
       args: [
         '--no-sandbox', 
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu'
       ]
-    });
+    };
+
+    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+      launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+    }
+
+    browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     
     // Configurar un User-Agent real
