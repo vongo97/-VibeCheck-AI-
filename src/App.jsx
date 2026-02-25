@@ -309,11 +309,13 @@ function App() {
                        e.target.value === 'google' ? 'gemini-2.5-flash' : 
                        e.target.value === 'mistral' ? 'mistral-small-latest' :
                        e.target.value === 'qwen' ? 'qwen-plus' :
+                       e.target.value === 'anthropic' ? 'claude-3-5-sonnet-20240620' :
                        'deepseek-chat'
               })}
             >
               <option value="google">Google (Gemini 2.5)</option>
               <option value="openai">OpenAI (ChatGPT)</option>
+              <option value="anthropic">Anthropic (Claude)</option>
               <option value="mistral">Mistral AI</option>
               <option value="qwen">Qwen (Alibaba)</option>
               <option value="deepseek">DeepSeek</option>
@@ -401,6 +403,7 @@ function App() {
                          e.target.value === 'google' ? 'gemini-2.5-flash' : 
                          e.target.value === 'mistral' ? 'mistral-small-latest' :
                          e.target.value === 'qwen' ? 'qwen-plus' :
+                         e.target.value === 'anthropic' ? 'claude-3-5-sonnet-20240620' :
                          'deepseek-chat'
                 })}
               >
