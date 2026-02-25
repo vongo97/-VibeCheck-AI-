@@ -12,8 +12,8 @@ services:
       - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
         value: "false" # Permitir descarga en Render si no hay Chrome global
       - key: GEMINI_API_KEY
-        sync: false
+        fromConfig: true
       - key: DATABASE_URL
-        sync: false
+        fromConfig: true
       - key: CORS_ORIGIN
         value: "*"
