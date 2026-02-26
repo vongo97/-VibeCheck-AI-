@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './index.css';
 
 function App() {
   // Estados de Onboarding
-  const [step, setStep] = useState(localStorage.getItem('llm_apiKey') ? 1 : 0); // 0: Config IA, 1: Questionnaire, 2: Profile Link, 3: Identity Summary, 4: Dashboard
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [step, setStep] = useState(localStorage.getItem('token') ? (localStorage.getItem('llm_apiKey') ? 4 : 0) : -1); // -1: Login, 0: Config IA, ...
   const [questionnaire, setQuestionnaire] = useState({
     role: '',
     roleOther: '',
@@ -34,6 +36,56 @@ function App() {
     model: localStorage.getItem('llm_model') || 'gemini-2.5-flash',
     apiKey: localStorage.getItem('llm_apiKey') || ''
   });
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+  const handleGoogleLogin = async (response) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: response.credential })
+      });
+      const data = await res.json();
+      if (data.accessToken) {
+        setToken(data.accessToken);
+        setUser(data.user);
+        localStorage.setItem('token', data.accessToken);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setStep(llmConfig.apiKey ? 4 : 0);
+      } else {
+        alert("Error al iniciar sesión");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error de conexión");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setToken('');
+    setUser(null);
+    setStep(-1);
+  };
+
+  useEffect(() => {
+    /* global google */
+    if (step === -1) {
+      google.accounts.id.initialize({
+        client_id: "139562438090-fjuiklqmmq3vrr2b5h6gu5s28fi7odlp.apps.googleusercontent.com",
+        callback: handleGoogleLogin
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("googleBtn"),
+        { theme: "outline", size: "large", text: "signin_with", width: "100%" }
+      );
+    }
+  }, [step]);
 
   const saveLlmConfig = (newConfig) => {
     setLlmConfig(newConfig);
@@ -109,7 +161,10 @@ function App() {
 
       const res = await fetch(`${API_URL}/api/generate-identity`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ 
           profileData: profileText, 
           questionnaire: finalQuestionnaire,
@@ -145,7 +200,10 @@ function App() {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
       const response = await fetch(`${API_URL}/api/generate-post`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ 
           topic, 
           context: identitySummary + "\nDNA de Voz: " + voiceDna,
@@ -289,6 +347,20 @@ function App() {
     );
   }
 
+  if (step === -1) {
+    return (
+      <div className="onboarding-container">
+        <div className="onboarding-card" style={{ maxWidth: '400px', textAlign: 'center' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🚀</div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '10px' }}>VibeCheck AI</h1>
+          <p style={{ opacity: 0.8, marginBottom: '30px' }}>Potencia tu LinkedIn con IA de forma segura.</p>
+          <div id="googleBtn" style={{ minHeight: '40px' }}></div>
+          {loading && <p style={{ marginTop: '15px' }}>Iniciando sesión...</p>}
+        </div>
+      </div>
+    );
+  }
+
   if (step === 0) {
     return (
       <div className="onboarding-container">
@@ -343,6 +415,16 @@ function App() {
 
   return (
     <div className="dashboard">
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '10px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img src={user?.profile_picture} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+          <div>
+            <div style={{ fontWeight: 'bold' }}>{user?.full_name}</div>
+            <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{user?.email}</div>
+          </div>
+        </div>
+        <button onClick={logout} className="btn-secondary" style={{ width: 'auto', padding: '8px 16px', margin: 0 }}>Cerrar Sesión</button>
+      </header>
       <nav style={{ display: 'flex', gap: '20px', marginBottom: '30px', borderBottom: '1px solid var(--glass-border)' }}>
         <button onClick={() => setActiveTab('analyze')} className={activeTab === 'analyze' ? 'tab-active' : ''}>Estrategia</button>
         <button onClick={() => setActiveTab('voice')} className={activeTab === 'voice' ? 'tab-active' : ''}>Voz (Ghostwriter)</button>

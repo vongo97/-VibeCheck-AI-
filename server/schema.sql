@@ -4,7 +4,10 @@
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     linkedin_url TEXT UNIQUE,
+    email TEXT UNIQUE,
+    google_id TEXT UNIQUE,
     full_name TEXT,
+    profile_picture TEXT,
     profile_summary TEXT, -- El texto 'Acerca de' o biografía
     identity_summary TEXT, -- La síntesis estratégica generada por IA
     voice_dna TEXT, -- El ADN de voz analizado
