@@ -222,7 +222,7 @@ function App() {
 
   if (step === 1) {
     return (
-      <div className="onboarding-container">
+      <div className="onboarding-container" key="step1">
         <div className="onboarding-card">
           <h2>Personalicemos tu IA</h2>
           <p>Dinos quién eres y qué buscas (máx. 3 metas).</p>
@@ -306,7 +306,7 @@ function App() {
 
   if (step === 2) {
     return (
-      <div className="onboarding-container">
+      <div className="onboarding-container" key="step2">
         <div className="onboarding-card">
           <h2>Conecta tu LinkedIn</h2>
           <p>Copia el URL de tu perfil o el texto de tu sección "Acerca de".</p>
@@ -329,7 +329,7 @@ function App() {
 
   if (step === 3) {
     return (
-      <div className="onboarding-container">
+      <div className="onboarding-container" key="step3">
         <div className="identity-summary">
           <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>LO QUE APRENDIMOS DE TI</h2>
           <div className="summary-wrapper">
@@ -349,7 +349,7 @@ function App() {
 
   if (step === -1) {
     return (
-      <div className="onboarding-container">
+      <div className="onboarding-container" key="login">
         <div className="onboarding-card" style={{ maxWidth: '400px', textAlign: 'center' }}>
           <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🚀</div>
           <h1 style={{ fontSize: '2rem', marginBottom: '10px' }}>VibeCheck AI</h1>
@@ -363,7 +363,7 @@ function App() {
 
   if (step === 0) {
     return (
-      <div className="onboarding-container">
+      <div className="onboarding-container" key="step0">
         <div className="onboarding-card" style={{ maxWidth: '500px' }}>
           <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🔑</div>
           <h2>Configura tu Cerebro</h2>
