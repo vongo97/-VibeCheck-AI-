@@ -9,7 +9,7 @@ export async function callLLM({ provider, model, apiKey, prompt, systemPrompt = 
     switch (provider) {
       case 'google':
         const genAI = new GoogleGenerativeAI(apiKey || process.env.GEMINI_API_KEY);
-        const googleModel = genAI.getGenerativeModel({ model: model || "gemini-1.5-flash" });
+        const googleModel = genAI.getGenerativeModel({ model: model || "gemini-2.5-flash" });
         const googleResult = await googleModel.generateContent(
           systemPrompt ? `${systemPrompt}\n\n${prompt}` : prompt
         );

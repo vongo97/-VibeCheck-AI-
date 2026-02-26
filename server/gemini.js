@@ -8,7 +8,7 @@ dotenv.config();
  * Genera contenido utilizando Gemini 2.5 Flash con Ingeniería de Viralidad y Estructuras
  */
 export async function generateViralPost(topic, strategy, config = {}) {
-  const { provider = 'google', model = 'gemini-1.5-flash', apiKey } = config;
+  const { provider = 'google', model = 'gemini-2.5-flash', apiKey } = config;
   
   try {
     const selectedStructure = getRandomStructure();

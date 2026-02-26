@@ -31,10 +31,22 @@ function App() {
   const [activeTab, setActiveTab] = useState('analyze');
 
   // Estados de Configuración de IA (BYOK)
-  const [llmConfig, setLlmConfig] = useState({
-    provider: localStorage.getItem('llm_provider') || 'google',
-    model: localStorage.getItem('llm_model') || 'gemini-2.5-flash',
-    apiKey: localStorage.getItem('llm_apiKey') || ''
+  const [llmConfig, setLlmConfig] = useState(() => {
+    const savedModel = localStorage.getItem('llm_model');
+    // Forzar actualización si es una versión antigua o inválida
+    const model = (savedModel === 'gemini-1.5-flash' || savedModel === 'gemini-2.0-flash') 
+      ? 'gemini-2.5-flash' 
+      : (savedModel || 'gemini-2.5-flash');
+      
+    if (savedModel && savedModel !== model) {
+      localStorage.setItem('llm_model', model);
+    }
+
+    return {
+      provider: localStorage.getItem('llm_provider') || 'google',
+      model: model,
+      apiKey: localStorage.getItem('llm_apiKey') || ''
+    };
   });
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -144,7 +156,7 @@ function App() {
           const scrapeRes = await fetch(`${API_URL}/api/analyze-link`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: profileInput })
+            body: JSON.stringify({ url: profileInput, llmConfig })
           });
           const scrapeData = await scrapeRes.json();
           
@@ -379,13 +391,11 @@ function App() {
                 provider: e.target.value, 
                 model: e.target.value === 'openai' ? 'gpt-4o-mini' : 
                        e.target.value === 'google' ? 'gemini-2.5-flash' : 
-                       e.target.value === 'mistral' ? 'mistral-small-latest' :
-                       e.target.value === 'qwen' ? 'qwen-plus' :
                        e.target.value === 'anthropic' ? 'claude-3-5-sonnet-20240620' :
                        'deepseek-chat'
               })}
             >
-              <option value="google">Google (Gemini 2.5)</option>
+              <option value="google">Google (Gemini 2.5 Flash)</option>
               <option value="openai">OpenAI (ChatGPT)</option>
               <option value="anthropic">Anthropic (Claude)</option>
               <option value="mistral">Mistral AI</option>
