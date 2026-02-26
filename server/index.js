@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
 import { scrapeLinkedInProfile } from './extractor.js';
 import { analyzeProfile, generateViralPost, analyzeVoice, generateIdentitySummary } from './gemini.js';
 import pool from './db.js';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,12 +33,17 @@ const authenticateToken = (req, res, next) => {
 // Endpoint de autenticación con Google
 app.post('/api/auth/google', async (req, res) => {
   const { idToken } = req.body;
+  
+  console.log("DEBUG - Intentando validar token...");
+  console.log("DEBUG - Client ID en ENV:", process.env.GOOGLE_CLIENT_ID);
+  console.log("DEBUG - Token recibido (primeros 20 caracteres):", idToken?.substring(0, 20));
 
   try {
     const ticket = await client.verifyIdToken({
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
+    console.log("DEBUG - Token validado correctamente");
     const payload = ticket.getPayload();
     const { sub: googleId, email, name, picture } = payload;
 
@@ -61,8 +69,8 @@ app.post('/api/auth/google', async (req, res) => {
 
     res.json({ user, accessToken });
   } catch (error) {
-    console.error("Error en auth de Google:", error);
-    res.status(401).json({ error: "Fallo en la autenticación de Google" });
+    console.error("DEBUG - Error detallado en auth de Google:", error);
+    res.status(401).json({ error: "Fallo en la autenticación de Google", details: error.message });
   }
 });
 

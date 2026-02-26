@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets and Env
+.env
+server/.env
+client_secret_*.json
+.gemini/
+
